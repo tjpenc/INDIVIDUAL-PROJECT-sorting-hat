@@ -16,14 +16,10 @@ const handleStartClick = (event) => {
 
 htmlBody.addEventListener("click", handleStartClick);
 
-
-
-
-
 //render students function, will use for student section AND voldemorts army
 const renderStudentCards = (elementToPopulate, array) => {
   let domString = "";
-  for (student of array) {
+  for (const student of array) {
   domString += `<div class="card" style="width: 18rem;">
   <div class="card-body">
     <h5 class="card-title">${student.name}</h5>
@@ -37,7 +33,7 @@ const renderStudentCards = (elementToPopulate, array) => {
 
  const renderVoldemortsArmy = (elementToPopulate, array) => {
   let domString = "";
-  for (student of array) {
+  for (const student of array) {
     domString += `<div class="card" style="width: 18rem;">
   <div class="card-body">
     <h5 class="card-title">${student.name}</h5>
@@ -76,10 +72,11 @@ const handleSortButtonClick = (event) => {
     enrolledStudents.push(Student);
     studentForm.reset();
   } else {
-    console.log("You need to put a name in!");
+    alert('Theres no student here :(');
   }
   //use array to dynamically populate cards in the student section
   renderStudentCards(studentSection, enrolledStudents);
+  console.log(enrolledStudents);
 }
 //add event listener to sort button
 sortButton.addEventListener("click", handleSortButtonClick);
@@ -98,12 +95,45 @@ const expelStudent = (event) => {
     const [, id] = event.target.id.split("--");
     const index = enrolledStudents.findIndex(student => student.id === Number(id));
     const expelledStudent = enrolledStudents.splice(index, 1)[0];
-    expelledStudent.house = "Voldemort";
+    expelledStudent.house = "Voldemorts Army";
     voldysArmy.push(expelledStudent);
-    console.log(voldysArmy[0]);
   }
   renderStudentCards(studentSection, enrolledStudents);
   renderVoldemortsArmy(voldysArmyDiv, voldysArmy);
 }
 
 studentSection.addEventListener("click", expelStudent);
+
+// ---------------------------- CREATE STUDENT HOUSE FILTER --------------------------------
+
+// Grab filter button div to begin sorting functionality
+const filterButtonContainer = document.querySelector(".filter-button-container");
+// Create function to filter cards by type
+const filterStudents = (array, studentHouse) => {
+  const houseArray = [];
+  for (const student of array) {
+    if (student.house === studentHouse) {
+      houseArray.push(student);
+    }
+  }
+  console.log(houseArray);
+  return houseArray;
+}
+
+filterButtonContainer.addEventListener("click", (event) => {
+  if (event.target.id === "all") {
+    renderStudentCards(studentSection, enrolledStudents);
+  } else if (event.target.id === "gryffindor") {
+    const gryfStudents = filterStudents(enrolledStudents, "Gryffindor");
+    renderStudentCards(studentSection, gryfStudents);
+  } else if (event.target.id === "hufflepuff") {
+    const huffStudents = filterStudents(enrolledStudents, "Hufflepuff");
+    renderStudentCards(studentSection, huffStudents);
+  } else if (event.target.id === "ravenclaw") {
+    const raveStudents = filterStudents(enrolledStudents, "Ravenclaw"); 
+    renderStudentCards(studentSection, raveStudents);
+  } else if (event.target.id === "slytherin") {
+    const snekStudents = filterStudents(enrolledStudents, "Slytherin");
+    renderStudentCards(studentSection, snekStudents);
+  }
+})
