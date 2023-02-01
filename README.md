@@ -1,5 +1,12 @@
 # Sorting Hat
-
+MVP Achieved! Ideas to make better:
+Make it so students dont reset to All every time student is expelled
+Use flexbox to organize it
+Add fun elements
+Reorganize Javascript a bit better
+Make a side nav?
+Larger voldemorts army is, danger level increases
+Give each person a random reason why
 ## Goals
 The goal of this project is to test your knowledge and to have a FUN time stretching yourself on your FIRST independent application that will become a part of your portfolio.
 
@@ -54,4 +61,3 @@ Think of a way you can expel students without just hiding those divs on the page
 ## Optional Bonus
 - House Colors: The color of the student's card changes depending on which house they were sorted.
 - Card Sorting/Ordering: Sort the student cards by some criteria (i.e. alphabetically by name, by house)
-
