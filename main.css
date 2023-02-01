@@ -2,8 +2,24 @@
   border: solid 2px black;
   margin: 10px;
   padding: 20px;
+  width: 100%;
 }
 
 .hidden {
   display: none;
+}
+
+#initial-form {
+  text-align: center;
+}
+
+#student-section-div {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+body {
+  display: flex;
+  justify-content: center;
 }
