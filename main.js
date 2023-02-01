@@ -1,3 +1,25 @@
+// ---------------------- Create Greeting ------------------------
+
+const htmlBody = document.querySelector("body");
+const startButton = document.querySelector("#load-button");
+const hiddenDiv = document.querySelector("#sorting-hat-all");
+const welcomePage = document.querySelector("#initial-form");
+
+
+const handleStartClick = (event) => {
+  if (event.target.id === "load-button") {
+    hiddenDiv.classList.toggle("hidden");
+    welcomePage.classList.toggle("hidden");
+    console.log("clicked");
+  }
+}
+
+htmlBody.addEventListener("click", handleStartClick);
+
+
+
+
+
 //render students function, will use for student section AND voldemorts army
 const renderStudentCards = (elementToPopulate, array) => {
   let domString = "";
@@ -26,8 +48,8 @@ const renderStudentCards = (elementToPopulate, array) => {
   elementToPopulate.innerHTML = `<h1>Voldemorts Army</h1>` + domString;
  }
 
-let studentExists = false;
-// SORTING FORM FUNCTIONALITY
+// -------------------------------- SORTING FORM FUNCTIONALITY ---------------------------
+
 //grab elements you will need: sort button and input field
 const sortButton = document.querySelector("#sorting-button");
 const studentNameInput = document.querySelector("#floatingInputValue");
@@ -63,6 +85,7 @@ const handleSortButtonClick = (event) => {
 sortButton.addEventListener("click", handleSortButtonClick);
 
 // ---------------------- ADD STUDENT CARD FUNCTIONALITY ---------------------
+
 // Grab voldemorts army, initialize voldemorts army array
 const voldysArmyDiv = document.querySelector("#voldemorts-army-div");
 const voldysArmy = [];
