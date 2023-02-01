@@ -1,16 +1,13 @@
-// ---------------------- Create Greeting ------------------------
-
+// ---------------------- CREATE GREETING ------------------------
 const htmlBody = document.querySelector("body");
-const startButton = document.querySelector("#load-button");
 const hiddenDiv = document.querySelector("#sorting-hat-all");
 const welcomePage = document.querySelector("#initial-form");
 
-
+// If button load button is pressed, 
 const handleStartClick = (event) => {
   if (event.target.id === "load-button") {
     hiddenDiv.classList.toggle("hidden");
     welcomePage.classList.toggle("hidden");
-    console.log("clicked");
   }
 }
 
