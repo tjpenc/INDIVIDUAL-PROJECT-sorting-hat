@@ -1,25 +1,82 @@
-/* #sorting-form-div, #voldemorts-army-div, #student-section-div {
-  border: solid 2px black;
-  margin: 10px;
-  padding: 20px;
-  width: 100%;
+body {
+  background-color: purple;
+  padding: 40px;
 }
 
-.hidden {
-  display: none;
+form {
+  width: 400px;
+  margin: 30px auto;
 }
 
-#initial-form {
-  text-align: center;
-}
-
-#student-section-div {
+.filter-button-container {
   display: flex;
-  flex-direction: column;
+  justify-content: space-around;
   flex-wrap: wrap;
 }
 
-body {
+#filter-div {
+  flex-basis: 100%;
+  background-color: grey;
+  text-align: center;
+  border: solid 2px black;
+  height: 50px;
+  padding-top: 10px;
+}
+
+.btn {
+  flex-basis: 20%;
+  border: solid 2px black;
+}
+
+#sort-button {
+  background-color: white;
+  border-radius: 50%;
+  display: block;
+  width: 200px;
+  height: 200px;
+  margin: 40px auto;
+}
+
+#card-section {
   display: flex;
-  justify-content: center;
-} */
+}
+
+#gryffindor, #Gryffindor {
+  background-color: orange;
+}
+
+#hufflepuff, #Hufflepuff {
+  background-color: yellow;
+}
+
+#ravenclaw, #Ravenclaw {
+  background-color: blue;
+}
+
+#slytherin, #Slytherin {
+  background-color: green;
+}
+
+#student-section {
+  background-color: grey;
+  border: solid 2px black;
+  flex-basis: 50%;
+}
+
+#voldemorts-army {
+  background-color: white;
+  border: solid 2px black;
+  flex-basis: 50%;
+}
+
+div h1 {
+  padding-left: 5px;
+}
+
+#student-section-div, #voldemorts-army-div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  row-gap: 10px;
+  padding: 50px;
+}
