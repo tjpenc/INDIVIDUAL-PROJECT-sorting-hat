@@ -2,6 +2,7 @@ const appContainer = document.querySelector("#app-container");
 const voldArmy = [];
 const enrolledStudents = [];
 let studentId = 0;
+let isFiltered = false;
 
 // Initialize welcome form and start the app
 const startApp = () => {
@@ -23,6 +24,7 @@ const renderForm = (event) => {
     <button type="button" id="sort-button" class="btn btn-warning">Sort</button>
   </form>
 <div class="filter-button-container">
+  <div id="filter-div">Filter Students By House</div>
   <button type="button" id="all" class="btn btn-info">All Students</button>
   <button type="button" id="gryffindor" class="btn btn-info">Gryffindor</button>
   <button type="button" id="hufflepuff" class="btn btn-info">Hufflepuff</button>
@@ -30,11 +32,17 @@ const renderForm = (event) => {
   <button type="button" id="slytherin" class="btn btn-info">Slytherin</button>
 </div>
 </div>
-<div id="student-section-div">
+<div id="card-section">
+<div id="student-section">
   <h1>Enrolled Students</h1>
+  <div id="student-section-div">
+  </div>
 </div>
-<div id="voldemorts-army-div">
+<div id="voldemorts-army">
   <h1>Voldemorts Army >:)</h1>
+  <div id="voldemorts-army-div">
+  </div>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>`
 }
@@ -48,10 +56,10 @@ appContainer.addEventListener("click", (event) => {
 
 //Create function to render students who have been sorted
 const renderStudentCards = (array) => {
-  let domString = "<h1>Enrolled Students</h1>";
+  let domString = "";
   for (const student of array) {
-    domString += `<div class="card" style="width: 18rem;">
-    <div class="card-body">
+    domString += `<div class="card" style="width: 10rem;">
+    <div class="card-body" id="${student.house}">
       <h5 class="card-title">${student.name}</h5>
       <p class="card-text">${student.house}</p>
       <a href="#" class="btn btn-danger expel" id="expel--${student.id}">EXPEL</a>
@@ -79,9 +87,15 @@ const sortStudent = () => {
     studentId++;
     enrolledStudents.push(newStudent);
     document.querySelector(".form-floating").reset();
-  }
-  renderStudentCards(enrolledStudents);
+    if (isFiltered) {
+      let currentArray = filterByHouse(studentHouse)
+      renderStudentCards(currentArray) ;
+    } else if (!isFiltered) {
+      renderStudentCards(enrolledStudents);
+    }
+  } 
 }
+
 //Create function to filter students into separate houses when called
 const filterByHouse = (house) => {
   const houseArray = [];
@@ -90,13 +104,15 @@ const filterByHouse = (house) => {
       houseArray.push(student);
     }
   }
+  isFiltered = true;
   return houseArray;
 }
+
 //Create function to render Voldemorts Army cards
 const renderVoldyCards = (array) => {
-  let domString = "<h1>Voldemorts Army >:)</h1>";
+  let domString = "";
   for (const student of array) {
-    domString += `<div class="card" style="width: 18rem;">
+    domString += `<div class="card" style="width: 10rem;">
     <div class="card-body">
       <h5 class="card-title">${student.name}</h5>
       <p class="card-text">${student.house}</p>
@@ -106,6 +122,7 @@ const renderVoldyCards = (array) => {
     }
   document.querySelector("#voldemorts-army-div").innerHTML = domString;
 }
+
 //Create function to expel students and push them into voldemorts army
 const expelStudent = () => {
   const htmlId = [...event.target.id];
@@ -117,6 +134,7 @@ const expelStudent = () => {
   renderStudentCards(enrolledStudents);
   renderVoldyCards(voldArmy);
 }
+
 //Create function to permanently delete student when in Voldemorts Army
 const deleteStudent = () => {
   const htmlId = [...event.target.id];
@@ -125,12 +143,14 @@ const deleteStudent = () => {
   voldArmy.splice(index, 1);
   renderVoldyCards(voldArmy);
 }
+
 //Add functionality to all buttons based on their ID
 const handleButtons = (event) => {
   if (event.target.id === "sort-button") {
     sortStudent();
   } else if (event.target.id === "all") {
     renderStudentCards(enrolledStudents);
+    isFiltered = false;
   } else if (event.target.id === "gryffindor") {
     const gryfStudents = filterByHouse("Gryffindor");
     renderStudentCards(gryfStudents);
@@ -149,5 +169,9 @@ const handleButtons = (event) => {
     deleteStudent();
   }
 }
+
 //Add event listener to the whole app
-appContainer.addEventListener("click", handleButtons);
+appContainer.addEventListener("click", (event) => {
+  event.preventDefault();
+  handleButtons(event);
+});
