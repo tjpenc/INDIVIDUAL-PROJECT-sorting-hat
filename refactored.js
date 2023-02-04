@@ -1,14 +1,17 @@
 const appContainer = document.querySelector("#app-container");
 const voldArmy = [];
 const enrolledStudents = [];
+let currentHouseArray = [];
+let currentHouse = "";
 let studentId = 0;
 let isFiltered = false;
+let areFighting = false;
+
 
 // Initialize welcome form and start the app
 const startApp = () => {
   appContainer.innerHTML = `<div id="initial-form">
-  <h1>Welcome</h1>
-  <h2>I am sorting hat lets do this</h1>
+  <h1>The Sorting Hat Welcomes You</h1>
   <button type="button" class="btn btn-success" id="start-button">Begin Sorting!</button>
 </div>`
 }
@@ -18,11 +21,14 @@ startApp();
 // Create a function to render rest of application when called
 const renderForm = (event) => {
   appContainer.innerHTML = `<div id="sorting-form-div">
+  <div id="input-and-sort-container">
   <form class="form-floating">
     <span>Student:</span>
     <input type="text" class="form-control" id="floatingInputValue" placeholder="student name" required>
-    <button type="button" id="sort-button" class="btn btn-warning">Sort</button>
+    <button type="button" id="sort-button" class="btn btn-warning"><span id="sort-button-text">Sort</span></button>
   </form>
+  <div id="hat-message"></div>
+  </div>
 <div class="filter-button-container">
   <div id="filter-div">Filter Students By House</div>
   <button type="button" id="all" class="btn btn-info">All Students</button>
@@ -86,25 +92,36 @@ const sortStudent = () => {
     }
     studentId++;
     enrolledStudents.push(newStudent);
+    announceHouse(newStudent);
+    decideWhoToRender(newStudent);
     document.querySelector(".form-floating").reset();
-    if (isFiltered) {
-      let currentArray = filterByHouse(studentHouse)
-      renderStudentCards(currentArray) ;
-    } else if (!isFiltered) {
-      renderStudentCards(enrolledStudents);
-    }
   } 
+}
+
+const announceHouse = (newStudent) => {
+  document.querySelector("#hat-message").innerHTML = `<p id=${newStudent.house}>${newStudent.name} joined ${newStudent.house}!</p>`; 
+}
+
+const decideWhoToRender = (newStudent) => {
+  if (!isFiltered) {
+    renderStudentCards(enrolledStudents);
+  } else if (isFiltered && newStudent.house === currentHouse) {
+    filterByHouse(newStudent.house);
+    renderStudentCards(currentHouseArray);
+  }
 }
 
 //Create function to filter students into separate houses when called
 const filterByHouse = (house) => {
+  isFiltered = true;
   const houseArray = [];
   for (student of enrolledStudents) {
     if (student.house === house) {
       houseArray.push(student);
     }
   }
-  isFiltered = true;
+  currentHouseArray = houseArray;
+  currentHouse = house;
   return houseArray;
 }
 
@@ -112,7 +129,7 @@ const filterByHouse = (house) => {
 const renderVoldyCards = (array) => {
   let domString = "";
   for (const student of array) {
-    domString += `<div class="card" style="width: 10rem;">
+    domString += `<div class="card" id="voldemort-member" style="width: 10rem;">
     <div class="card-body">
       <h5 class="card-title">${student.name}</h5>
       <p class="card-text">${student.house}</p>
@@ -125,14 +142,17 @@ const renderVoldyCards = (array) => {
 
 //Create function to expel students and push them into voldemorts army
 const expelStudent = () => {
-  const htmlId = [...event.target.id];
-  const objectId = (htmlId[htmlId.length - 1]);
-  const index = enrolledStudents.findIndex(student => student.id === Number(objectId));
-  const newRecruit = enrolledStudents.splice(index, 1);
-  newRecruit[0].house = "Voldemorts Army";
-  voldArmy.push(...newRecruit);
-  renderStudentCards(enrolledStudents);
+  const [, id] = event.target.id.split("--");
+  const index = enrolledStudents.findIndex(student => student.id === Number(id));
+  const newRecruit = enrolledStudents.splice(index, 1)[0];
+  decideWhoToRender(newRecruit);
+  newRecruit.house = "Voldemorts Army";
+  voldArmy.push(newRecruit);
   renderVoldyCards(voldArmy);
+  if ((enrolledStudents.length >= 0 && voldArmy.length >= 2 && areFighting === false)) {
+    areFighting = true;
+    setTimeout(beginBattle, 2000);
+  }
 }
 
 //Create function to permanently delete student when in Voldemorts Army
@@ -146,11 +166,10 @@ const deleteStudent = () => {
 
 //Add functionality to all buttons based on their ID
 const handleButtons = (event) => {
-  if (event.target.id === "sort-button") {
+  if (event.target.id === "sort-button" || event.target.id === "sort-button-text") {
     sortStudent();
   } else if (event.target.id === "all") {
     renderStudentCards(enrolledStudents);
-    isFiltered = false;
   } else if (event.target.id === "gryffindor") {
     const gryfStudents = filterByHouse("Gryffindor");
     renderStudentCards(gryfStudents);
@@ -175,3 +194,110 @@ appContainer.addEventListener("click", (event) => {
   event.preventDefault();
   handleButtons(event);
 });
+
+// -----------------------------------SECRET BATTLE FUNCTIONALITY ---------------------------------
+const beginBattle = () => {
+      alert("The death eater army grows, I hope nothing bad happens...");
+      appContainer.innerHTML += `<div id=fight-button-container><button id="fight-button">Fight!</button></div>`
+}
+
+const makeWizardsFight = () => {
+  const goodGuys = enrolledStudents.length;
+  const badGuys = voldArmy.length;
+  const goodDiceRoll = Math.round(Math.random() * goodGuys);
+  const badDiceRoll = Math.round(Math.random() * badGuys);
+  let damage = goodDiceRoll - badDiceRoll;
+  calculateBattleResults(damage);
+}
+
+const calculateBattleResults = (damage) => {
+  let battleResultText = "";
+  let fallenSoldiersNames = "";
+  let numFallenSoldiers = damage;
+  let fightConituesText = "";
+  if (voldArmy.length === 0) {
+    deathEatersDefeated();
+  } else if (enrolledStudents.length === 0) {
+    studentsDefeated();
+  } else if (damage > 0) {
+    deathEatersHurt(damage);
+  } else if (damage < 0) {
+    damage *= -1;
+    studentsHurt(damage);
+  } else if (damage === 0) {
+    tiedFight();
+  }
+}
+
+const deathEatersDefeated = () => {
+  battleResultText = "The death eaters are defeated!";
+  numFallenSoldiers = "Casualties: 0";
+  fallenSoldiersNames = "Nobody was hurt";
+  fightConituesText = "The fight is over... for now";
+  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+}
+
+const studentsDefeated = () => {
+  battleResultText = "There is no one left to defend hogwarts";
+  numFallenSoldiers = "Casualties: 0";
+  fallenSoldiersNames = "The infirmary is full";
+  fightConituesText = "The fight is lost, darkness has won";
+  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+}
+
+const deathEatersHurt = (damage) => {
+  fallenSoldiersNames = "";
+  battleResultText = "The death eaters took a hit!";
+  const fallenSoldiers = voldArmy.splice(0, damage);
+  numFallenSoldiers = "Casualties: " + fallenSoldiers.length;
+  for (const soldier of fallenSoldiers) {
+    fallenSoldiersNames += `Death Eater ${soldier.name} has fallen <br>`;
+  }
+  if (voldArmy.length > 0) {
+    fightConituesText = "The fight rages on!";
+  } else {
+    fightConituesText = "Hogwarts is safe... for now";
+  }
+  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+  renderVoldyCards(voldArmy);
+}
+
+const studentsHurt = (damage) => {
+  fallenSoldiersNames = "";
+  battleResultText = "Students have been injured in battle!";
+  const fallenSoldiers = enrolledStudents.splice(0, damage);
+  numFallenSoldiers = "Casualties: " + fallenSoldiers.length;
+  for (const soldier of fallenSoldiers) {
+    fallenSoldiersNames += `Student ${soldier.name} has been sent to the infirmiry <br>`;
+  }
+  if (enrolledStudents.length > 0) {
+    fightConituesText = "The fight rages on!";
+  } else {
+    fightConituesText = "Death eaters have won... will no one fight?";
+  }
+  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+  renderStudentCards(enrolledStudents);
+}
+
+const tiedFight = () => {
+  battleResultText = "The forces are tied";
+  numFallenSoldiers = "Casualties: 0";
+  fallenSoldiersNames = "Nobody was hurt";
+  fightConituesText = "The fight rages on";
+  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+}
+
+const renderFightInfo = (battleResultsText, numFallenSoldiers, fallenSoldiersNames, theFightContinues) => {
+  const fightInfo = `<div id="battle-results"><p>${battleResultsText}</p><p>${numFallenSoldiers}</p><p>${fallenSoldiersNames}</p><p>${theFightContinues}</p><button id="clear-battle-info">Continue</button></div>`;
+  appContainer.innerHTML += fightInfo;
+}
+
+appContainer.addEventListener("click", (event) => {
+  if (event.target.id === "fight-button") {
+    renderStudentCards(enrolledStudents);
+    makeWizardsFight();
+  } else if (event.target.id === "clear-battle-info") {
+    const battleResults = document.querySelector("#battle-results");
+    appContainer.removeChild(battleResults);
+  }
+})
