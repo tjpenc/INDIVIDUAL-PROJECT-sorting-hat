@@ -1,9 +1,6 @@
 # Sorting Hat
 MVP Achieved! Ideas to make better:
-Make it so students dont reset to All every time student is expelled
-Use flexbox to organize it
 Add fun elements
-Reorganize Javascript a bit better
 Make a side nav?
 Larger voldemorts army is, danger level increases
 Give each person a random reason why
