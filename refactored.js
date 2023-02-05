@@ -169,6 +169,7 @@ const handleButtons = (event) => {
   if (event.target.id === "sort-button" || event.target.id === "sort-button-text") {
     sortStudent();
   } else if (event.target.id === "all") {
+    isFiltered = false;
     renderStudentCards(enrolledStudents);
   } else if (event.target.id === "gryffindor") {
     const gryfStudents = filterByHouse("Gryffindor");
@@ -214,35 +215,37 @@ const calculateBattleResults = (damage) => {
   let battleResultText = "";
   let fallenSoldiersNames = "";
   let numFallenSoldiers = damage;
-  let fightConituesText = "";
+  let fightContinuesText = "";
+  let battleResult = [];
   if (voldArmy.length === 0) {
-    deathEatersDefeated();
+    battleResult = deathEatersDefeated();
   } else if (enrolledStudents.length === 0) {
-    studentsDefeated();
+    battleResult = studentsDefeated();
   } else if (damage > 0) {
-    deathEatersHurt(damage);
+    battleResult = deathEatersHurt(damage);
   } else if (damage < 0) {
     damage *= -1;
-    studentsHurt(damage);
+    battleResult = studentsHurt(damage);
   } else if (damage === 0) {
-    tiedFight();
+    battleResult = tiedFight();
   }
+  renderFightInfo(battleResult);
 }
 
 const deathEatersDefeated = () => {
   battleResultText = "The death eaters are defeated!";
   numFallenSoldiers = "Casualties: 0";
   fallenSoldiersNames = "Nobody was hurt";
-  fightConituesText = "The fight is over... for now";
-  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+  fightContinuesText = "The fight is over... for now";
+  return [battleResultText, numFallenSoldiers, fallenSoldiersNames, fightContinuesText];
 }
 
 const studentsDefeated = () => {
   battleResultText = "There is no one left to defend hogwarts";
   numFallenSoldiers = "Casualties: 0";
   fallenSoldiersNames = "The infirmary is full";
-  fightConituesText = "The fight is lost, darkness has won";
-  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+  fightContinuesText = "The fight is lost, darkness has won";
+  return [battleResultText, numFallenSoldiers, fallenSoldiersNames, fightContinuesText];
 }
 
 const deathEatersHurt = (damage) => {
@@ -251,15 +254,15 @@ const deathEatersHurt = (damage) => {
   const fallenSoldiers = voldArmy.splice(0, damage);
   numFallenSoldiers = "Casualties: " + fallenSoldiers.length;
   for (const soldier of fallenSoldiers) {
-    fallenSoldiersNames += `Death Eater ${soldier.name} has fallen <br>`;
+    fallenSoldiersNames += `Death Eater ${soldier.name} has retreated <br>`;
   }
   if (voldArmy.length > 0) {
-    fightConituesText = "The fight rages on!";
+    fightContinuesText = "The fight rages on!";
   } else {
-    fightConituesText = "Hogwarts is safe... for now";
+    fightContinuesText = "Hogwarts is safe... for now";
   }
-  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
   renderVoldyCards(voldArmy);
+  return [battleResultText, numFallenSoldiers, fallenSoldiersNames, fightContinuesText];
 }
 
 const studentsHurt = (damage) => {
@@ -268,27 +271,27 @@ const studentsHurt = (damage) => {
   const fallenSoldiers = enrolledStudents.splice(0, damage);
   numFallenSoldiers = "Casualties: " + fallenSoldiers.length;
   for (const soldier of fallenSoldiers) {
-    fallenSoldiersNames += `Student ${soldier.name} has been sent to the infirmiry <br>`;
+    fallenSoldiersNames += `Student ${soldier.name} has been sent to the infirmary <br>`;
   }
   if (enrolledStudents.length > 0) {
-    fightConituesText = "The fight rages on!";
+    fightContinuesText = "The fight rages on!";
   } else {
-    fightConituesText = "Death eaters have won... will no one fight?";
+    fightContinuesText = "Death eaters have won... will no one fight?";
   }
-  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
   renderStudentCards(enrolledStudents);
+  return [battleResultText, numFallenSoldiers, fallenSoldiersNames, fightContinuesText];
 }
 
 const tiedFight = () => {
   battleResultText = "The forces are tied";
   numFallenSoldiers = "Casualties: 0";
   fallenSoldiersNames = "Nobody was hurt";
-  fightConituesText = "The fight rages on";
-  renderFightInfo(battleResultText, numFallenSoldiers, fallenSoldiersNames, fightConituesText);
+  fightContinuesText = "The battle rages on";
+  return [battleResultText, numFallenSoldiers, fallenSoldiersNames, fightContinuesText];
 }
 
-const renderFightInfo = (battleResultsText, numFallenSoldiers, fallenSoldiersNames, theFightContinues) => {
-  const fightInfo = `<div id="battle-results"><p>${battleResultsText}</p><p>${numFallenSoldiers}</p><p>${fallenSoldiersNames}</p><p>${theFightContinues}</p><button id="clear-battle-info">Continue</button></div>`;
+const renderFightInfo = (array) => {
+  const fightInfo = `<div id="battle-results"><p>${array[0]}</p><p>${array[1]}</p><p>${array[2]}</p><p>${array[3]}</p><button id="clear-battle-info">Continue</button></div>`;
   appContainer.innerHTML += fightInfo;
 }
 
@@ -297,7 +300,7 @@ appContainer.addEventListener("click", (event) => {
     renderStudentCards(enrolledStudents);
     makeWizardsFight();
   } else if (event.target.id === "clear-battle-info") {
-    const battleResults = document.querySelector("#battle-results");
-    appContainer.removeChild(battleResults);
+    const battleResultsContainer = document.querySelector("#battle-results");
+    appContainer.removeChild(battleResultsContainer);
   }
 })
