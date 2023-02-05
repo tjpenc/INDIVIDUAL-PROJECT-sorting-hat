@@ -157,9 +157,8 @@ const expelStudent = () => {
 
 //Create function to permanently delete student when in Voldemorts Army
 const deleteStudent = () => {
-  const htmlId = [...event.target.id];
-  const objectId = (htmlId[htmlId.length - 1]);
-  const index = voldArmy.findIndex(student => student.id === Number(objectId));
+  const [, id] = event.target.id.split("--");
+  const index = voldArmy.findIndex(student => student.id === Number(id));
   voldArmy.splice(index, 1);
   renderVoldyCards(voldArmy);
 }
